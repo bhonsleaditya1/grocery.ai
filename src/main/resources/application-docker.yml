@@ -1,0 +1,21 @@
+spring:
+  data:
+    mongodb:
+      host: mongodb
+      port: 27017
+      database: grocery
+      username: root
+      password: rootpassword
+#      uri: mongodb://root:rootpassword@docker.for.windows:27017/
+    redis:
+      host: redis
+      port: 6379
+  kafka:
+    consumer:
+      bootstrap-servers: broker:9092
+      group-id: grocery
+    producer:
+      bootstrap-servers: broker:9092
+      key-serializer: org.apache.kafka.common.serialization.LongSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
