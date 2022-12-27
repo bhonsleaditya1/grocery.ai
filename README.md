@@ -1,5 +1,5 @@
 
-## grocery.ai
+## grocery.verse
 Reactive Microservice Project
 ### Components:
 
