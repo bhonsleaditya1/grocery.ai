@@ -1,5 +1,6 @@
 package ai.grocery.orchestrator;
 
+import lombok.extern.log4j.Log4j2;
 import org.apache.kafka.clients.admin.Admin;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
@@ -7,9 +8,11 @@ import org.apache.kafka.clients.admin.NewTopic;
 
 import java.util.*;
 
+@Log4j2
 public class OrchestratorFramework {
 
     static {
+        log.info("Creating Kafka Topics");
         Properties properties = new Properties();
         properties.setProperty(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,"localhost:9092");
         try (Admin admin = Admin.create(properties)) {
@@ -22,14 +25,15 @@ public class OrchestratorFramework {
             });
             CreateTopicsResult result = admin.createTopics(newTopicList);
         }
+        log.info("Creating Queue Execution Instance");
         QueueExecution.getInstance();
+        log.info("Creating API Execution Instance");
         ApiExecutionService.getInstance();
     }
 
     public OrchestratorWorkflow createWorkflow(OrchestratorStep orchestratorStep) {
-        OrchestratorWorkflow orchestratorWorkflow = new OrchestratorWorkflow();
-        orchestratorWorkflow.setRootOrchestratorStep(orchestratorStep);
-        orchestratorWorkflow.setOrchestratorStepMap(new HashMap<>());
+        OrchestratorWorkflow orchestratorWorkflow = new OrchestratorWorkflow(orchestratorStep,new HashMap<>());
+        log.info("Created Workflow: {}",orchestratorWorkflow);
         return orchestratorWorkflow;
     }
 
@@ -38,6 +42,6 @@ public class OrchestratorFramework {
     }
 
     public void execute(OrchestratorWorkflow orchestratorWorkflow) {
-        orchestratorWorkflow.executeWorkflow();
+        new Thread(orchestratorWorkflow,"OrchestratorWorkflow").start();
     }
 }

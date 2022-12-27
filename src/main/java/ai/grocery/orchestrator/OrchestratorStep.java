@@ -4,6 +4,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
@@ -11,26 +14,24 @@ import java.util.List;
 @Setter
 @Builder
 @ToString
-public class OrchestratorStep {
+public class OrchestratorStep implements Runnable{
+    public static final Logger log = LoggerFactory.getLogger(OrchestratorStep.class);
     private String orchestratorStepId;
-    private ServiceType microServiceType;
-    private InteractionType interactionType;
     private Event event;
-    private StepExecution stepExecution;
+    private Event rollback;
     private Integer retryCount;
+    private Status status;
+    private Action action;
     private List<OrchestratorStep> next;
 
 
-    public void execute(){
-        switch (interactionType){
-            case QUEUE -> {stepExecution = QueueExecution.getInstance();}
-            case API -> stepExecution = ApiExecutionService.getInstance();
-        }
+    public void run(){
+        log.info("Started Execution of Step:{},{}",event,retryCount);
         retryCount++;
-        stepExecution.setService(microServiceType);
-        stepExecution.execute(event);
+        event.execute();
         if(retryCount>5) {
-            stepExecution.rollback(event);
+            log.error("Rollback of Event: {}",event);
+            event.rollback();
         }
     }
 }

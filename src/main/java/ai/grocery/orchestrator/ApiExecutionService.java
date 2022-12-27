@@ -4,7 +4,7 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.web.client.RestTemplate;
 
 @Log4j2
-public class ApiExecutionService implements StepExecution {
+public class ApiExecutionService implements EventExecution {
     private RestTemplate restTemplate = new RestTemplate();
 
     private static ApiExecutionService instance =null;
@@ -18,19 +18,4 @@ public class ApiExecutionService implements StepExecution {
     @Override
     public void execute(Event event) {
     }
-
-    @Override
-    public void rollback(Event event) {
-    }
-
-    @Override
-    public void process() {
-    }
-
-    @Override
-    public void setService(ServiceType serviceType) {
-
-    }
-
-
 }
